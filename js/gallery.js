@@ -75,7 +75,7 @@ function createMarkup(array) {
     .map(
       (el) => `
     <li class="gallery-item">
-  <a class="gallery-link" href="large-image.jpg">
+  <a class="gallery-link" href="${el.original}">
     <img
       class="gallery-image"
       width="250"
@@ -95,7 +95,7 @@ function handleClickImage(event) {
   if (event.target.nodeName !== "IMG") {
     return;
   }
-  console.log("Click", event.target.dataset.source);
+
   instance.element().querySelector("img").src = "";
   instance.element().querySelector("img").src = event.target.dataset.source;
   instance.element().querySelector("img").alt = event.target.alt;
@@ -103,6 +103,22 @@ function handleClickImage(event) {
   instance.show();
 }
 
-const instance = basicLightbox.create(`
+const instance = basicLightbox.create(
+  `
 	<img src="" width="1000" alt=""/>
-`);
+`,
+  {
+    onShow: function () {
+      document.addEventListener("keydown", onKeyDown);
+    },
+    onClose: function () {
+      document.removeEventListener("keydown", onKeyDown);
+    },
+  }
+);
+
+function onKeyDown(event) {
+  if (event.key === "Escape") {
+    instance.close();
+  }
+}
